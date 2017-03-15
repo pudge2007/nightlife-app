@@ -1,11 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>NightLife App</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/" />
+    <link href="./components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel='stylesheet' href='./stylesheets/style.css' />
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <body ng-app="nightlife" class='ng-cloak' ng-controller="MainCtrl">
+    <nav class="nav navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+      <div class='navbar-header'>
+        <a class="navbar-brand" href="/">Home</a>
+      </div>
+          <ul class="nav navbar-nav navbar-right">
+            <li ng-hide='showing'><a href='/login'>Login</a></li>
+            <li ng-show='showing'><form action="/logout" method="get"><input class='logout' type="submit" value="Logout"></form></li>
+          </ul>
+      </div>
+    </nav>
+    <div class='page-home'>
+      <div class="banner text-center">
+        <h1>Nightlife Coordination</h1>
+        <h4>See which bars are hoppin' tonight and RSVP ahead of time!</h4>
+        <form ng-submit='find()'>
+          <input type='text' ng-model='query' placeholder='where you at?' />
+          <input type='submit' value='search' />
+        </form>
+      </div>
+      <div class="container">  
+        <div class="row" ng-switch on="items.length">
+          <div ng-switch-when="0">
+            <em>let's go</em>
+          </div>
+          <div class="col-xs-10 col-xs-offset-1">
+            <ul ng-switch-default>
+              <li class='poll_link' ng-repeat='item in items.businesses'>
+                <a class='fll' href='{{item.url}}'><img src='{{item.image_url}}'></a>
+                <a href='{{item.url}}'><h3>{{item.name}}</h3></a>
+                <img class='stars' src='{{item.rating_img_url}}'></img>
+                <p>{{item.snippet_text}}</p>
+                <div class='btn_go'>0 going</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script src="./components/angular/angular.min.js"></script>
+    <script src="./components/angular-route/angular-route.min.js"></script>
+    <script src="./components/angular-resource/angular-resource.min.js"></script>
+    <script src="./javascripts/angularApp.js"></script>  
   </body>
 </html>
+
+

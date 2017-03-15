@@ -8,6 +8,7 @@ var passport = require('passport');
 var session = require('express-session');
 var routes = require('./routes');
 var api = require('./routes/api');
+var Yelp = require('yelp');
 
 var app = express();
 
@@ -34,13 +35,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', routes.index);
-app.get('/partials/:name', routes.partials);
 
-api(app, passport);
-
-app.get('*', routes.index);
-
-// socket.io in ./bin/www
+api(app, passport, Yelp);
 
 
 // catch 404 and forward to error handler
