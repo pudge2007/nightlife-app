@@ -157,6 +157,7 @@ input.logout:focus {
 }
 
 .btn_go {
+  background-color: transparent;
   color: #96d0e6;
   text-transform: uppercase;
   font-size: 14px;
@@ -176,46 +177,15 @@ input.logout:focus {
   color: #fff;
 }
 
-
-.page-login {
-  margin-top: 100px;
-}
-
-.page-login form > div {
-  position: relative;
-  display: inline-block;
-}
-
-.page-login form > div:after{
-  content: '';
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  width: 32px;
-  height: 32px;
-  display: block;
-  background: url(../images/github.png);
-  transition: .3s;
-}
-
-.btn-login {
+.btn_go.clicked_false:hover,
+.btn_go.clicked_false:focus{
   background-color: #96d0e6;
   color: #fff;
-  text-transform: uppercase;
-  font-size: 18px;
-  padding: 15px 60px 15px 30px;
-  transition: .3s;
-  position: relative;
-  outline: none;
 }
 
-.page-login form > div:hover:after,
-.page-login form > div:focus:after{
-  background: url(../images/github_dark.png);
-}
-
-.page-login form > div:hover .btn-login,
-.page-login form > div:focus .btn-login{
-  border: 1px solid #333;
-  background-color: transparent;
+.btn_go.clicked_true:hover,
+.btn_go.clicked_true:focus{
+  border-color: #f4536d;
+  background-color: #f4536d;
+  color: #fff;
 }

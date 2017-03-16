@@ -15,7 +15,7 @@
         <a class="navbar-brand" href="/">Home</a>
       </div>
           <ul class="nav navbar-nav navbar-right">
-            <li ng-hide='showing'><a href='/login'>Login</a></li>
+            <li ng-hide='showing'><form action="/auth/github" method="get"><input class='logout' type="submit" value="Login"></form></li>
             <li ng-show='showing'><form action="/logout" method="get"><input class='logout' type="submit" value="Logout"></form></li>
           </ul>
       </div>
@@ -31,8 +31,8 @@
       </div>
       <div class="container">  
         <div class="row" ng-switch on="items.length">
-          <div ng-switch-when="0">
-            <em>let's go</em>
+          <div ng-switch-when="0" class='text-center'>
+            <em></em>
           </div>
           <div class="col-xs-10 col-xs-offset-1">
             <ul ng-switch-default>
@@ -41,7 +41,12 @@
                 <a href='{{item.url}}'><h3>{{item.name}}</h3></a>
                 <img class='stars' src='{{item.rating_img_url}}'></img>
                 <p>{{item.snippet_text}}</p>
-                <div class='btn_go'>0 going</div>
+                <div ng-show='showing' class='btn_go clicked_{{clicked}}' ng-click='go(item.id, $index)'>{{item.count}} going</div>
+                <div ng-hide='showing' >
+                  <form action="/auth/github" method="get">
+                    <input class='btn_go' type="submit" value="{{item.count}} going">
+                  </form>
+                </div>
               </li>
             </ul>
           </div>
