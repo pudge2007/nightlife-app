@@ -40,29 +40,23 @@ app.config(['$routeProvider', '$locationProvider', '$httpProvider', function($ro
 app.controller('MainCtrl', ['$scope', '$http', function($scope, $http){
   $scope.items = [];
   $scope.clicked = false;
-/*  var query;
-  
-  console.log(query)
-  if(query !== undefined){
-    $scope.query = query;
-    $http.get('/find/' + query).then(function(response){
-      $scope.items = response.data;
-      console.log('if login');
-    })
-  }*/
+  var query;
   
   $scope.find = function() {
-    $http.get('/find/' + $scope.query).then(function(response){
-      $scope.items = response.data;
-      $scope.items.businesses.forEach(function(item){
-        item.count = 0;
+    query = $scope.query;
+    $http.get('/find/' + query).then(function(response){
+      $scope.items = response.data.bars;
+      console.log(response.data)
+      $scope.items.businesses.forEach(function(item, i){
+        item.count = response.data.counts[i]
       })
     })
   }
   
   $scope.go = function (eventId, index) {
     if(!$scope.clicked){
-      $http.post('/log', {id: eventId}).then(function(response){
+      var evLog = {id: eventId, query: query};
+      $http.post('/log', evLog).then(function(response){
         $scope.items.businesses[index].count = response.data;
         $scope.clicked = true;
       })

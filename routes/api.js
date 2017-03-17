@@ -1,8 +1,19 @@
+var async = require('async');
 var Event = require('../models/Events');
 var Users = require('../models/Users');
 
 module.exports = function (app, passport, Yelp) {
-    
+  
+/*  function getCounts(evId, callback) {
+    Event.find({'idEvent': evId}, function(err, events) {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, events.length);
+      }
+    });
+  };*/
+  
   var yelp = new Yelp({
     consumer_key: process.env.YELP_KEY,
     consumer_secret: process.env.YELP_SECRET,
@@ -11,18 +22,33 @@ module.exports = function (app, passport, Yelp) {
   });
   
   app.get('/find/:loc', function(req, res) {
-    yelp.search({ term: 'restaurants', location: req.params.loc }).then(function (data) {
-        res.json(data)
-/*        Users.findOneAndUpdate({'idUser': req.user.github.id}, { query: req.params.loc }, function(err) {
-          if(err) throw err;
-        })*/
-    }).catch(function (err) {
-        console.error(err);
+    async.parallel({
+      bars: function(callback){
+        return yelp.search({ term: 'restaurants', location: req.params.loc }, function (err, results) {
+          return callback(err, results);
+        });
+      },
+     events: function(callback){
+        return Event.find({ 'query': req.params.loc }, function (err, logs) {
+          return callback(err, logs);
+        });
+      }  
+      }, function(err, results){
+        if (err) throw err;
+        var counts = results.bars.businesses.map(function(item){
+          var i = 0;
+          results.events.forEach(function(ev){
+            if(ev.idEvent === item.id)
+              i++;
+          })
+          return i;
+        })
+        res.json({bars:results.bars, counts: counts});
     });
   })
   
   app.post('/log', function(req, res) {
-    var evObj = {idUser: req.user.github.id, idEvent: req.body.id};
+    var evObj = {idUser: req.user.github.id, idEvent: req.body.id, query: req.body.query};
     var event = new Event(evObj);
     event.save(function(err) {
       if(err) throw err;
