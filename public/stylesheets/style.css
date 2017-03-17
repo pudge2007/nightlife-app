@@ -177,14 +177,8 @@ input.logout:focus {
   color: #fff;
 }
 
-.btn_go.clicked_false:hover,
-.btn_go.clicked_false:focus{
-  background-color: #96d0e6;
-  color: #fff;
-}
-
-.btn_go.clicked_true:hover,
-.btn_go.clicked_true:focus{
+.btn_go.clicked:hover,
+.btn_go.clicked:focus{
   border-color: #f4536d;
   background-color: #f4536d;
   color: #fff;
