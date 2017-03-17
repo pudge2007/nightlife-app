@@ -4,16 +4,6 @@ var Users = require('../models/Users');
 
 module.exports = function (app, passport, Yelp) {
   
-/*  function getCounts(evId, callback) {
-    Event.find({'idEvent': evId}, function(err, events) {
-      if (err) {
-        callback(err, null);
-      } else {
-        callback(null, events.length);
-      }
-    });
-  };*/
-  
   var yelp = new Yelp({
     consumer_key: process.env.YELP_KEY,
     consumer_secret: process.env.YELP_SECRET,
@@ -21,6 +11,7 @@ module.exports = function (app, passport, Yelp) {
     token_secret: process.env.YELP_TOKEN_SECRET,
   });
   
+  //search bars, votes and send to client side
   app.get('/find/:loc', function(req, res) {
     async.parallel({
       bars: function(callback){
@@ -47,27 +38,34 @@ module.exports = function (app, passport, Yelp) {
     });
   })
   
-  app.post('/log', function(req, res) {
-    var evObj = {idUser: req.user.github.id, idEvent: req.body.id, query: req.body.query};
-    var event = new Event(evObj);
-    event.save(function(err) {
-      if(err) throw err;
-      Event.find({'idEvent': req.body.id}, function(err, events) {
+  //check log and add or delete vote
+  app.post('/checkLog', function(req, res) {
+    function getCount(idEv) {
+      Event.find({'idEvent': idEv}, function(err, events) {
         if(err) throw err;
         res.json(events.length);
       })
-    })
-  });
-  
-  app.delete('/log/:idEv', function(req, res){
-    Event.find({'idUser': req.user.github.id}).remove({'idEvent': req.params.idEv}, function(err){
+    }
+    Event.find({'idEvent': req.body.id, 'idUser': req.user.github.id}, function(err, logs) {
       if(err) throw err;
-      Event.find({'idEvent': req.body.id}, function(err, events) {
-        if(err) throw err;
-        res.json(events.length);
-      })
+      if(logs.length === 0){
+        var evObj = {idUser: req.user.github.id, idEvent: req.body.id, query: req.body.query};
+        var event = new Event(evObj);
+        event.save(function(err) {
+          if(err) throw err;
+          getCount(req.body.id);
+        })  
+      } else {
+        Event.find({'idUser': req.user.github.id}).remove({'idEvent': req.body.id}, function(err){
+          if(err) throw err;
+          Event.find({'idEvent': req.body.id}, function(err, events) {
+            if(err) throw err;
+            getCount(req.body.id);
+          })
+        })
+      }
     })
-  });
+  })
     
   // initiate authentication with GitHub 
   app.get('/auth/github', passport.authenticate('github'));

@@ -38,6 +38,8 @@ app.get('/', routes.index);
 
 api(app, passport, Yelp);
 
+app.get('*', routes.index);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

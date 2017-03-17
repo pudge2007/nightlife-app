@@ -37,9 +37,8 @@ app.config(['$routeProvider', '$locationProvider', '$httpProvider', function($ro
 }]);
 
 
-app.controller('MainCtrl', ['$scope', '$http', function($scope, $http){
+app.controller('MainCtrl', ['$scope', '$http', '$route', function($scope, $http, $route){
   $scope.items = [];
-  $scope.clicked = false;
   var query;
   
   $scope.find = function() {
@@ -48,23 +47,16 @@ app.controller('MainCtrl', ['$scope', '$http', function($scope, $http){
       $scope.items = response.data.bars;
       console.log(response.data)
       $scope.items.businesses.forEach(function(item, i){
-        item.count = response.data.counts[i]
+        item.count = response.data.counts[i];
       })
     })
   }
   
   $scope.go = function (eventId, index) {
-    if(!$scope.clicked){
-      var evLog = {id: eventId, query: query};
-      $http.post('/log', evLog).then(function(response){
-        $scope.items.businesses[index].count = response.data;
-        $scope.clicked = true;
-      })
-    } else {
-      $http.delete('/log/' + eventId).then(function(response){
-        $scope.items.businesses[index].count = response.data;
-        $scope.clicked = false;
-      })
-    }
+    var evLog = {id: eventId, query: query};
+    $http.post('/checkLog', evLog).then(function(response) {
+      $scope.items.businesses[index].count = response.data;
+      $route.reload();
+    })
   }
 }]);
