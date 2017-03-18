@@ -41,7 +41,7 @@
                 <a href='{{item.url}}'><h3>{{item.name}}</h3></a>
                 <img class='stars' src='{{item.rating_img_url}}'></img>
                 <p>{{item.snippet_text}}</p>
-                <div ng-show='showing' class='btn_go' ng-class="{clicked: clicked ==  $index}"  ng-click='go(item.id, $index)'>{{item.count}} going</div>
+                <div ng-show='showing' class='btn_go' ng-class="{clicked: item.userEv ==  true}"  ng-click='go(item.id, $index)'>{{item.count}} going</div>
                 <div ng-hide='showing'>
                   <form action="/auth/github" method="get">
                     <input class='btn_go' type="submit" value="{{item.count}} going">

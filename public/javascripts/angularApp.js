@@ -31,8 +31,12 @@ app.controller('MainCtrl', ['$scope', '$http', '$route', '$cookies', function($s
       $scope.items = response.data.bars;
       $scope.items.businesses.forEach(function(item, i){
         item.count = response.data.counts[i];
+        if(response.data.userEv) {
+          item.userEv = response.data.userEv.some(function (ev) {
+            return item.id === ev.idEvent;
+          })
+        }
       })
-      console.log(response.data)
     })
   }
   
@@ -40,7 +44,6 @@ app.controller('MainCtrl', ['$scope', '$http', '$route', '$cookies', function($s
   if(cookie) {
     $scope.query = query = cookie;
     search(query);
-    console.log(cookie, $scope.items)
   }
   
   $scope.find = function() {
@@ -55,10 +58,10 @@ app.controller('MainCtrl', ['$scope', '$http', '$route', '$cookies', function($s
   $scope.go = function (eventId, index) {
     var evLog = {id: eventId, query: query};
     $http.post('/checkLog', evLog).then(function(response) {
-      $scope.items.businesses[index].count = response.data;
+      $scope.items.businesses[index].count = response.data.evLength;
+      $scope.items.businesses[index].userEv = response.data.userEv;
       $route.reload();
     })
   }
-  
-  $scope.clicked = 30;
+
 }]);

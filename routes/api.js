@@ -19,11 +19,22 @@ module.exports = function (app, passport, Yelp) {
           return callback(err, results);
         });
       },
-     events: function(callback){
+      events: function(callback){
         return Event.find({ 'query': req.params.loc }, function (err, logs) {
           return callback(err, logs);
         });
-      }  
+      },
+      userEv: function(callback){
+        if(!req.user || req.user == undefined)
+          return callback();
+        else {
+          return Event.find({ 'query': req.params.loc, 'idUser': req.user.github.id }, function (err, events) {
+            return callback(err, events);
+          });
+        }
+        
+        
+      }
       }, function(err, results){
         if (err) throw err;
         var counts = results.bars.businesses.map(function(item){
@@ -34,16 +45,16 @@ module.exports = function (app, passport, Yelp) {
           })
           return i;
         })
-        res.json({bars:results.bars, counts: counts});
+        res.json({bars:results.bars, counts: counts, userEv: results.userEv});
     });
   })
   
   //check log and add or delete vote
   app.post('/checkLog', function(req, res) {
-    function getCount(idEv) {
+    function getCount(idEv, userEv) {
       Event.find({'idEvent': idEv}, function(err, events) {
         if(err) throw err;
-        res.json(events.length);
+        res.json({evLength: events.length, userEv: userEv });
       })
     }
     Event.find({'idEvent': req.body.id, 'idUser': req.user.github.id}, function(err, logs) {
@@ -53,14 +64,14 @@ module.exports = function (app, passport, Yelp) {
         var event = new Event(evObj);
         event.save(function(err) {
           if(err) throw err;
-          getCount(req.body.id);
+          getCount(req.body.id, true);
         })  
       } else {
         Event.find({'idUser': req.user.github.id}).remove({'idEvent': req.body.id}, function(err){
           if(err) throw err;
           Event.find({'idEvent': req.body.id}, function(err, events) {
             if(err) throw err;
-            getCount(req.body.id);
+            getCount(req.body.id, false);
           })
         })
       }
